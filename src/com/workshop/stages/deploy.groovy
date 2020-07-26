@@ -6,6 +6,7 @@ import com.workshop.Config
 
 // Deploy app as docker container
 def deploy(Pipeline p) {
+    c = new Config()
     
     withEnv(["PATH+DOCKER=${p.dockerTool}/bin"]){
         println "Take Down previous Deployment"

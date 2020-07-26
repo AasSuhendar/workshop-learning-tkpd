@@ -69,6 +69,7 @@ def main(script) {
 
        stage('Service Healthcheck') {
            spostdeploy.healthcheck(p)
+           spostdeploy.deleteImageBuild(p)
        }
 
     }

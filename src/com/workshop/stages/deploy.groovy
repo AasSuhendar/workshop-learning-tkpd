@@ -3,14 +3,14 @@ package com.workshop.stages
  
 import com.workshop.Pipeline
 import com.workshop.Config
- 
+
+// Deploy app as docker container
 def deploy(Pipeline p) {
-    c = new Config()
     
     withEnv(["PATH+DOCKER=${p.dockerTool}/bin"]){
         println "Take Down previous Deployment"
         def response = sh script: "docker rm -f \$(docker ps -aq -f 'name=${p.repository_name}') &> /dev/null", returnStatus: true
-        println response
+        println "Response delete container = "+response
         if ("${response}" == "0") {
             println("Successfuly removing old container")
         } else {

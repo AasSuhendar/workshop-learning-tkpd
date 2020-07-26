@@ -3,7 +3,8 @@ package com.workshop.stages
  
 import com.workshop.Pipeline
 import com.workshop.Config
- 
+
+// Print details of Job for a running a repository
 def details(Pipeline p) {
    println("================\u001b[42mDetails Of Jobs\u001b[0m===============")
    println("\u001b[36mRepository Name : \u001b[0m${p.repository_name}")
@@ -13,7 +14,8 @@ def details(Pipeline p) {
    println("\u001b[36mTesting this PR : \u001b[0m#${p.pr_num} - https://github.com/${p.git_user}/${p.repository_name}/pull/${p.pr_num}")
    println("\u001b[36mMerging to branch : \u001b[0m${p.branch_name}")
 }
- 
+
+// Validate the Pipeline
 def validation(Pipeline p) {
     if(!p.repository_name) {
         "Repository name can't be empty"
@@ -36,42 +38,43 @@ def validation(Pipeline p) {
     }
 }
  
+// Checkout VCS and run some of test and build on dockercontainer
 def checkoutBuildTest(Pipeline p) {
-   c = new Config()
+    c = new Config()
+    
+    withCredentials([usernamePassword(credentialsId: 'github-personal', passwordVariable: 'git_token', usernameVariable: 'git_username')]) {
+        println "============\u001b[44mCommencing PR Checkout\u001b[0m============"
+        println "\u001b[36mChecking out from : \u001b[0mpull/${p.pr_num}/head:pr/${p.pr_num}..."
+
+        git branch: "${p.branch_name}", url: "https://github.com/${p.git_user}/${p.repository_name}.git"
+    
+        sh "git config --global user.name '${git_username}'"
+        sh "git config --global user.email '${git_username}@example.com'"
+        sh "git branch -D pr/${p.pr_num} &> /dev/null || true"
+        sh "git fetch origin pull/${p.pr_num}/head:pr/${p.pr_num}"
+        sh "git merge --no-ff pr/${p.pr_num}"
+    }
  
-   withCredentials([usernamePassword(credentialsId: 'github-personal', passwordVariable: 'git_token', usernameVariable: 'git_username')]) {
-       println "============\u001b[44mCommencing PR Checkout\u001b[0m============"
-       println "\u001b[36mChecking out from : \u001b[0mpull/${p.pr_num}/head:pr/${p.pr_num}..."
-       
-       git branch: "${p.branch_name}", url: "https://github.com/${p.git_user}/${p.repository_name}.git"
- 
-       sh "git config --global user.name '${git_username}'"
-       sh "git config --global user.email '${git_username}@example.com'"
-       sh "git branch -D pr/${p.pr_num} &> /dev/null || true"
-       sh "git fetch origin pull/${p.pr_num}/head:pr/${p.pr_num}"
-       sh "git merge --no-ff pr/${p.pr_num}"
-   }
- 
-   docker.withTool("${c.default_docker_jenkins_tool}") {
- 
-       def golangImage = docker.image("${c.default_golang_base_image}")
-       golangImage.inside("-u 0") {
-           build = sh returnStatus: true, script: "go build -v"
-           if (build == 0) {
-               println "\u001b[36mBuilding \u001b[33m. \u001b[32mDONE !!!\u001b[0m"
-           } else {
-               println "\u001b[36mBuilding \u001b[33m. \u001b[31mFAILED !!!\u001b[0m"
-               error("Build test failed")
-           }
-       }
-       golangImage.inside("-u 0") {
-           test = sh returnStatus: true, script: "go test ./..."
-           if (build == 0) {
-               println "\u001b[36mTesting \u001b[33m. \u001b[32mDONE !!!\u001b[0m"
-           } else {
-               println "\u001b[36mTesting \u001b[33m. \u001b[31mFAILED !!!\u001b[0m"
-               error("Unit test failed")
-           }
-       }
-   }
+    docker.withTool("${c.default_docker_jenkins_tool}") {
+    
+        def golangImage = docker.image("${c.default_golang_base_image}")
+        golangImage.inside("-u 0") {
+            build = sh returnStatus: true, script: "go build -v"
+            if (build == 0) {
+                println "\u001b[36mBuilding \u001b[33m. \u001b[32mDONE !!!\u001b[0m"
+            } else {
+                println "\u001b[36mBuilding \u001b[33m. \u001b[31mFAILED !!!\u001b[0m"
+                error("Build test failed")
+            }
+        }
+        golangImage.inside("-u 0") {
+            test = sh returnStatus: true, script: "go test ./..."
+            if (build == 0) {
+                println "\u001b[36mTesting \u001b[33m. \u001b[32mDONE !!!\u001b[0m"
+            } else {
+                println "\u001b[36mTesting \u001b[33m. \u001b[31mFAILED !!!\u001b[0m"
+                error("Unit test failed")
+            }
+        }
+    }
 }

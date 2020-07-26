@@ -45,9 +45,6 @@ def main(script) {
     )
 
     ansiColor('xterm') {
-        // stage('Test stage') {
-        //     println "Hello!"
-        // }
 
         stage('Pre Build - Details') {
            sprebuild.validation(p)

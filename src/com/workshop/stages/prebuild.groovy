@@ -5,7 +5,7 @@ import com.workshop.Pipeline
 import com.workshop.Config
  
 def details(Pipeline p) {
-   println("================\u001b[44mDetails Of Jobs\u001b[0m===============")
+   println("================\u001b[42mDetails Of Jobs\u001b[0m===============")
    println("\u001b[36mRepository Name : \u001b[0m${p.repository_name}")
    println("\u001b[36mBranch Name : \u001b[0m${p.branch_name}")
    println("\u001b[36mApplication Port : \u001b[0m${p.app_port}")
@@ -15,23 +15,25 @@ def details(Pipeline p) {
 }
  
 def validation(Pipeline p) {
-   if(!p.repository_name) {
-       "Repository name can't be empty"
-       error("ERROR101 - MISSING REPOSITORY_NAME")
-   }
+    if(!p.repository_name) {
+        "Repository name can't be empty"
+        error("ERROR101 - MISSING REPOSITORY_NAME")
+    }
 
-if(!p.branch_name) {
+    if(!p.branch_name) {
        "Branch name can't be empty"
        error("ERROR101 - MISSING BRANCH_NAME")
-   }
-   if(!p.app_port) {
-       "Application port can't be empty"
-       error("ERROR101 - MISSING APP_PORT")
-   }
-   if(!p.pr_num) {
-       "PR Number can't be empty"
-       error("ERROR101 - MISSING PR_NUM")
-   }
+    }
+
+    if(!p.app_port) {
+        "Application port can't be empty"
+        error("ERROR101 - MISSING APP_PORT")
+    }
+
+    if(!p.pr_num) {
+        "PR Number can't be empty"
+        error("ERROR101 - MISSING PR_NUM")
+    }
 }
  
 def checkoutBuildTest(Pipeline p) {
@@ -40,6 +42,7 @@ def checkoutBuildTest(Pipeline p) {
    withCredentials([usernamePassword(credentialsId: 'github-personal', passwordVariable: 'git_token', usernameVariable: 'git_username')]) {
        println "============\u001b[44mCommencing PR Checkout\u001b[0m============"
        println "\u001b[36mChecking out from : \u001b[0mpull/${p.pr_num}/head:pr/${p.pr_num}..."
+       
        git branch: "${p.branch_name}", url: "https://github.com/${p.git_user}/${p.repository_name}.git"
  
        sh "git config --global user.name '${git_username}'"

@@ -2,6 +2,7 @@
 package com.workshop.stages
  
 import com.workshop.Pipeline
+import com.workshop.Config
 
 // Health check apps with curl to apps
 def healthcheck(Pipeline p) {
@@ -23,7 +24,7 @@ def healthcheck(Pipeline p) {
 
 def deleteImageBuild(Pipeline p){
     c = new Config()
-    
+
     // withEnv(["PATH+DOCKER=${p.dockerTool}/bin"]){
     //     println "Docker Images"
     //     println $BUILD_NUMBER

@@ -22,6 +22,8 @@ def healthcheck(Pipeline p) {
 }
 
 def deleteImageBuild(Pipeline p){
+    c = new Config()
+    
     // withEnv(["PATH+DOCKER=${p.dockerTool}/bin"]){
     //     println "Docker Images"
     //     println $BUILD_NUMBER

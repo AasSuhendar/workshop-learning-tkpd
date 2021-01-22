@@ -42,7 +42,7 @@ def deleteImageBuild(Pipeline p){
         sh script: "docker ps -a &> /dev/null", returnStatus: true
 
         println "Stop Container ${p.repository_name}-$BUILD_NUMBER"
-        sh script: "docker rm ${p.repository_name}-$BUILD_NUMBER &> /dev/null", returnStatus: true
+        sh script: "docker rm -f ${p.repository_name}-$BUILD_NUMBER &> /dev/null", returnStatus: true
 
         println "Docker Images"
         def images = sh script: "docker image ls &> /dev/null", returnStatus: true
@@ -57,7 +57,7 @@ def deleteImageBuild(Pipeline p){
         println rmi   
 
         println "Remove Image ${p.docker_registry}/${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER"
-        def rmi_req = sh script: "docker rmi ${p.docker_registry}/${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER" , returnStatus: true
+        def rmi_req = sh script: "docker rmi registry-1.docker.io/${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER" , returnStatus: true
         println rmi_req  
     }
 }

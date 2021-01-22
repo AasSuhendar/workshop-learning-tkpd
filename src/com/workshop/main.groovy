@@ -72,7 +72,7 @@ def main(script) {
        }
 
        stage('Delete Old Image'){
-            spostdeploy.deleteOldImage(p)
+           spostdeploy.deleteImageBuild(p)
        }
 
     }

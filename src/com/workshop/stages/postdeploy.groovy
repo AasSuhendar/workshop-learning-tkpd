@@ -25,27 +25,27 @@ def healthcheck(Pipeline p) {
 def deleteImageBuild(Pipeline p){
     c = new Config()
 
-    // withEnv(["PATH+DOCKER=${p.dockerTool}/bin"]){
-    //     println "Docker Images"
-    //     println $BUILD_NUMBER
-    //     def response = sh script: "docker image ls &> /dev/null", returnStatus: true
-    //     println response
-    //     def danglingstatus = sh script: 'docker rmi $(docker images --filter "dangling=true" -q) ', returnStatus: true
-    //     println danglingstatus
-    //     // def image = docker.image("${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER")
-    //     def rmi = sh script: "docker rmi ${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER"
-    //     println rmi
-    // }
-
-    docker.withTool("${c.default_docker_jenkins_tool}") {
+    withEnv(["PATH+DOCKER=${p.dockerTool}/bin"]){
         println "Docker Images"
-        // println $BUILD_NUMBER
+        println $BUILD_NUMBER
         def response = sh script: "docker image ls &> /dev/null", returnStatus: true
         println response
         def danglingstatus = sh script: 'docker rmi $(docker images --filter "dangling=true" -q) ', returnStatus: true
         println danglingstatus
         // def image = docker.image("${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER")
         def rmi = sh script: "docker rmi ${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER"
-        println rmi   
+        println rmi
     }
+
+    // docker.withTool("${c.default_docker_jenkins_tool}") {
+    //     println "Docker Images"
+    //     // println $BUILD_NUMBER
+    //     def response = sh script: "docker image ls &> /dev/null", returnStatus: true
+    //     println response
+    //     def danglingstatus = sh script: 'docker rmi $(docker images --filter "dangling=true" -q) ', returnStatus: true
+    //     println danglingstatus
+    //     // def image = docker.image("${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER")
+    //     def rmi = sh script: "docker rmi ${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER"
+    //     println rmi   
+    // }
 }

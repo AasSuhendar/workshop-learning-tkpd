@@ -38,13 +38,21 @@ def deleteImageBuild(Pipeline p){
     // }
 
     docker.withTool("${c.default_docker_jenkins_tool}") {
+        println "Docker Container List"
+        def containers = sh script: "docker ps -a &> /dev/null", returnStatus: true
+
+        println "Stop Container ${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER"
+        sh script: "docker rm ${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER &> /dev/null", returnStatus: true
+
         println "Docker Images"
-        // println $BUILD_NUMBER
-        def response = sh script: "docker image ls &> /dev/null", returnStatus: true
-        println response
+        def images = sh script: "docker image ls &> /dev/null", returnStatus: true
+        println images
+
+        println "Docker Prune Dangling Images"
         def danglingstatus = sh script: 'docker rmi $(docker images --filter "dangling=true" -q) ', returnStatus: true
         println danglingstatus
         // def image = docker.image("${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER")
+        println "Remove Image ${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER"
         def rmi = sh script: "docker rmi ${p.docker_user}/${p.repository_name}:build-$BUILD_NUMBER"
         println rmi   
     }

@@ -7,10 +7,15 @@ import com.workshop.stages.*
 def main(script) {
     // Object initialization
     c = new Config()
+    // Pre Build Stage
     sprebuild = new prebuild()
+    // Build Stage
     sbuild = new build()
+    // Post Build Stage
     spostbuild = new postbuild()
+    // Deploy Stage
     sdeploy = new deploy()
+    //  Post Deploy Stage
     spostdeploy = new postdeploy()
 
     // Pipeline specific variable get from injected env
@@ -71,7 +76,7 @@ def main(script) {
            spostdeploy.healthcheck(p)
        }
 
-       stage('Delete Old Image'){
+       stage('Delete Old Image and Containers'){
            spostdeploy.deleteImageBuild(p)
        }
 
